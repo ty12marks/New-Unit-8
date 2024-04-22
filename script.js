@@ -1,18 +1,30 @@
+const axios = require('axios');
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js"
-const supabaseUrl = 'https://unppumaqumdqwvomiqpk.supabase.co'
-const supabaseKey ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHB1bWFxdW1kcXd2b21pcXBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTA4MDAwMDAsImV4cCI6MjAyNjM3NjAwMH0.kx3X-HJI41c-63A7vPFUVrLIYJVxsbjAAojhAKLThGQ'
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Replace with your actual API keys and endpoint URLs
+const WEATHER_API_KEY = 'YOUR_WEATHER_API_KEY';
+const WEATHER_URL = `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${WEATHER_API_KEY}`;
 
-async function getBooks() {
-    let { data: books, error } = await supabase
-        .from('books')
-        .select('*')
+const TRAFFIC_API_KEY = 'YOUR_TRAFFIC_API_KEY';
+const TRAFFIC_URL = `https://api.trafficapi.com/anyendpoint?apikey=${TRAFFIC_API_KEY}&location=London`;
 
-    for (let book of books) {
-        let booklist = document.getElementById('books');
-        booklist.innerHTML += `<tr><td>${book.title}<td/><td>${book.author}</td><td>${book.isbn}</td></tr>`;
+function fetchData(url) {
+    return axios.get(url).then(response => response.data);
+}
+
+function updateUI(elementId, data) {
+    document.getElementById(elementId).innerText = JSON.stringify(data, null, 2);
+}
+
+async function loadAndDisplayData() {
+    try {
+        const weatherData = await fetchData(WEATHER_URL);
+        updateUI('weather', weatherData);
+
+        const trafficData = await fetchData(TRAFFIC_URL);
+        updateUI('traffic', trafficData);
+    } catch (error) {
+        console.error('Error fetching data:', error);
     }
 }
 
-getBooks();
+loadAndDisplayData();
